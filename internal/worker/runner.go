@@ -167,5 +167,8 @@ func (r *Runner) publish(subject string, envelope EventEnvelope) error {
 		r.log.Info("nats_unavailable_event_logged", "subject", subject, "eventType", envelope.EventType)
 		return nil
 	}
-	return r.nats.Publish(subject, envelope.Bytes())
+	if err := r.nats.Publish(subject, envelope.Bytes()); err != nil {
+		return err
+	}
+	return r.nats.FlushTimeout(2 * time.Second)
 }
