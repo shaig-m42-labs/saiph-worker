@@ -1,23 +1,13 @@
 # saiph-worker
-Background worker service for scheduled jobs, async processing, cleanup tasks, and system automation.
 
-**Language:** ```Go```
-**Stack:** `Go, NATS, Redis, HTTP client, cron/scheduler.`
+Scheduled health check worker for Orion Platform V1.
 
-**Responsibilities:**
-```
-Scheduled health checks
-Expired deployment cleanup
-Incident reminder jobs
-SLO calculation jobs
-Old token/session cleanup trigger
-Daily reliability summary generation
-```
+## Behavior
 
-**first feature suggestion:**
-```
-Every 30 seconds:
-- fetch active health check configs from core
-- call target health endpoint
-- publish healthcheck.passed or healthcheck.failed event
-```
+Every `CHECK_INTERVAL_SECONDS` seconds, the worker:
+
+1. Fetches active health checks from `betelgeuse-core`.
+2. Calls each target URL.
+3. Publishes `orion.healthcheck.passed` or `orion.healthcheck.failed` to NATS.
+
+Core owns incident creation and idempotency.
